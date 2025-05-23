@@ -44,14 +44,15 @@ with open(file_path, "rb") as raw_file:
 try:
     data = json.loads(raw_data.decode(encoding))
 except Exception as e:
-    print(f"❌ Failed to decode using {encoding}: {e}")
+    print(f"Failed to decode using {encoding}: {e}")
     exit()
 
 # Step 2: Extract document title
 def get_document_title(fields):
     for field in fields:
         if field.get("name") == "DocumentTitle":
-            return re.sub(r'[<>:"/\\|?*]', '', field.get("value", "Untitled Page"))
+            # return re.sub(r'[<>:"/\\|?*]', '', field.get("value", "Untitled Page"))
+            return field.get("value","Untitled Page")
     return "Untitled Page"
 
 title = get_document_title(data.get("fields", []))
@@ -112,7 +113,7 @@ def generate_image_macro(filename):
 </ac:image>
 '''.strip()
 
-def get_info_panel_content(external_id):
+def get_tooltip_panel_content(external_id):
     entry = info_lookup.get(external_id)
     if not entry:
         return None
@@ -143,12 +144,7 @@ def highlight_externalid(html_content):
         r'(<[^>]*data-externalid="([^"]+)"[^>]*>)(.*?)</[^>]+>',
         re.DOTALL | re.IGNORECASE
     )
-
-    # def html_to_tooltip_text(html_fragment):
-    #     soup = BeautifulSoup(html_fragment, "html.parser")
-    #     for br in soup.find_all("br"):
-    #         br.replace_with("\n")
-    #     return soup.get_text(separator="\n").strip()
+    
     def html_to_tooltip_text(html_fragment):
         soup = BeautifulSoup(html_fragment, "html.parser")
 
@@ -161,7 +157,7 @@ def highlight_externalid(html_content):
 
     def repl(match):
         _, external_id, inner_text = match.group(1), match.group(2), match.group(3)
-        result = get_info_panel_content(external_id)
+        result = get_tooltip_panel_content(external_id)
 
         if not result:
             return match.group(0)
@@ -193,7 +189,7 @@ try:
     )
     print(f"✅ Page created: {result['_links']['base']}{result['_links']['webui']}")
 except Exception as e:
-    print(f"❌ Failed to create Confluence page: {e}")
+    print(f"Failed to create Confluence page: {e}")
     exit()
 
 # Step 7: Upload images to the created page
@@ -211,6 +207,6 @@ for file in os.listdir(images_folder):
         )
         uploaded.append(file)
     except Exception as e:
-        print(f"❌ Failed to upload {file}: {e}")
+        print(f"Failed to upload {file}: {e}")
 
 print(f"📷 Uploaded {len(uploaded)} images: {uploaded}")
