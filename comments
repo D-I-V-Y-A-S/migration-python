@@ -1,0 +1,5 @@
+pip install chardet
+pip install beautifulsoup4
+pip install atlassian-python-api
+pip install python-dotenv
+pip install requests
