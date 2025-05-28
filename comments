@@ -4,3 +4,4 @@ pip install atlassian-python-api
 pip install python-dotenv
 pip install requests
 pip install pandas openpyxl
+pip install pycryptodome
